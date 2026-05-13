@@ -6,36 +6,31 @@ demo: ./demo.md
 
 # card.md — Lớp kiến trúc dữ liệu
 
-**Tình huống xử lý**: T-__  
+**Tình huống xử lý**: T-01  
 Xem `../../1-map-and-format.md` Phần A.
 
 ---
 
 ## 1. Giải pháp là gì?
 
-[Viết 2-3 câu. Nói rõ hệ thống cần thêm nguồn dữ liệu, bước kiểm tra, cách chuyển câu hỏi hoặc cách ghi lại lỗi nào.]
+Thêm một lớp **Red-Flag Safety Router** trước khi chatbot đi vào luồng AI trả lời hoặc đặt lịch. Router này kiểm tra input của người dùng để phát hiện cụm triệu chứng nguy hiểm như “tức ngực”, “khó thở”, “tê tay”, đặc biệt khi user tự giảm nhẹ là “do mệt” hoặc muốn đặt lịch ngày mai.
 
-Ví dụ:
-
-> Với câu hỏi về học bổng, hệ thống phải tra nguồn tuyển sinh chính thức trước khi AI trả lời. Nếu nguồn không có dữ liệu hoặc bị lỗi, AI không được đoán mà chuyển câu hỏi cho tư vấn viên.
+Nếu phát hiện red flag, hệ thống không cho tiếp tục luồng đặt lịch thông thường. Thay vào đó, hệ thống trả về mẫu hướng dẫn an toàn đã chuẩn bị trước: khuyến nghị gọi cấp cứu, đến cơ sở y tế gần nhất, hoặc liên hệ nhân viên y tế trực.
 
 ---
 
 ## 2. Vì sao sửa ở lớp kiến trúc dữ liệu?
 
-[Chọn 1-2 ý đúng với giải pháp của nhóm.]
+Rủi ro T-01 xảy ra vì hệ thống có thể phụ thuộc quá nhiều vào LLM để tự phân loại mức độ nguy hiểm. LLM có thể bị “neo” theo lời tự chẩn đoán của user như “chắc do chạy deadline mệt”, rồi tiếp tục hỗ trợ đặt lịch thay vì cảnh báo khẩn cấp.
 
-- Nguyên nhân chính là thiếu nguồn đúng hoặc nguồn cũ.
-- AI đang phải tự nhớ thông tin thay vì đọc từ nguồn đáng tin cậy.
-- Cần kiểm tra dữ liệu trước khi câu trả lời được tạo ra.
-- Cần ghi lại lỗi để nhóm biết lỗi nào lặp lại nhiều.
+Sửa ở lớp kiến trúc giúp tạo một lớp chặn độc lập với LLM. Trước khi AI sinh câu trả lời, hệ thống đã kiểm tra cụm triệu chứng nguy hiểm và quyết định có cần chuyển sang luồng khẩn cấp hay không.
 
 **Hành động phòng vệ chính**:
 
-- [ ] Ngăn lỗi bằng nguồn dữ liệu đúng
-- [ ] Phát hiện khi nguồn thiếu hoặc lỗi
-- [ ] Khắc phục bằng cách chuyển sang người thật
-- [ ] Ghi lại lỗi để cải thiện sau
+- [x] Ngăn lỗi bằng bước kiểm tra red-flag trước khi AI trả lời
+- [x] Phát hiện khi input có cụm triệu chứng rủi ro cao
+- [x] Khắc phục bằng cách chuyển sang kênh y tế / người thật khi cần
+- [x] Ghi lại lỗi để cải thiện sau
 
 ---
 
@@ -46,9 +41,9 @@ Ví dụ:
 Demo cần có:
 
 - Sơ đồ cách dữ liệu đi qua hệ thống
-- Nguồn dữ liệu chính thức
 - Bước kiểm tra trước khi AI trả lời
-- Cách xử lý khi nguồn thiếu, lỗi hoặc quá cũ
+- Cách xử lý khi phát hiện red flag
+- Cách xử lý khi không phát hiện red flag rõ ràng
 - Cách ghi lại hoặc theo dõi lỗi
 
 ---
@@ -57,20 +52,25 @@ Demo cần có:
 
 **Có thể gây vấn đề gì?**
 
-[Ví dụ: trả lời chậm hơn, phụ thuộc vào nguồn dữ liệu, tốn công duy trì, hệ thống phức tạp hơn.]
+| Tác dụng phụ | Vì sao có thể xảy ra | Cách giảm |
+|---|---|---|
+| Báo động nhầm | User nhắc đến từ khóa như “khó thở” nhưng không ở tình huống cấp tính | Chỉ kích hoạt mạnh khi có cụm nhiều triệu chứng cùng lúc hoặc có dấu hiệu thời gian như “đang”, “từ tối qua”, “vừa bị” |
+| Bỏ sót red flag | User dùng từ đời thường hoặc viết sai chính tả như “nặng ngực”, “ngộp thở”, “tay trái lạ lạ” | Mở rộng danh sách từ đồng nghĩa từ test set và log lỗi |
+| User khó chịu vì không đặt lịch được ngay | Hệ thống ưu tiên an toàn nên chặn luồng đặt lịch thường | Câu cảnh báo phải ngắn, rõ lý do, và đưa lựa chọn hành động tiếp theo |
+| Không có nhân viên trực | User dùng ngoài giờ hành chính | Luôn có fallback: gọi cấp cứu hoặc đến cơ sở y tế gần nhất |
 
 **Nhóm giảm vấn đề đó bằng cách nào?**
 
-[Ví dụ: lưu tạm dữ liệu phổ biến, có thông báo khi nguồn lỗi, đặt người phụ trách cập nhật nguồn, giới hạn chỉ áp dụng với câu hỏi rủi ro cao.]
+Nhóm chỉ áp dụng router này cho nhóm triệu chứng rủi ro cao. Các câu hỏi thông thường vẫn đi qua luồng chatbot bình thường. Với các case bị router chặn, hệ thống ghi log để nhóm review và điều chỉnh rule sau.
 
 ---
 
 ## 5. Checklist trước khi nộp
 
-- [ ] Sơ đồ cho thấy dữ liệu đi từ đâu đến đâu.
-- [ ] Có bước kiểm tra nguồn trước khi AI trả lời.
-- [ ] Có cách xử lý khi không có dữ liệu.
-- [ ] Có cách chuyển sang người thật với tình huống rủi ro cao.
-- [ ] Có cách biết lỗi này có đang lặp lại không.
+- [x] Sơ đồ cho thấy dữ liệu đi từ đâu đến đâu.
+- [x] Có bước kiểm tra nguồn/rủi ro trước khi AI trả lời.
+- [x] Có cách xử lý khi không đủ an toàn để AI tự trả lời.
+- [x] Có cách chuyển sang người thật với tình huống rủi ro cao.
+- [x] Có cách biết lỗi này có đang lặp lại không.
 
-**Người phụ trách**: [Tên thành viên]
+**Người phụ trách**: Dương Khoa Điềm
