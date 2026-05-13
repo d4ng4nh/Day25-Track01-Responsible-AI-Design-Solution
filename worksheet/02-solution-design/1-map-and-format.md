@@ -31,8 +31,8 @@ Ba lớp này bổ sung cho nhau. Nếu một lớp lọt lỗi, lớp khác v�
 
 ## Thông tin nhóm
 
-- **Chủ đề**: Trợ lý AI sàng lọc triệu chứng y tế (Symptom Triage Chatbot)
-- **Thành viên**: Đặng Tuấn Anh, Dương Khoa Điềm, Nguyễn Tuấn Khanh
+- **Chủ đề**: [...]
+- **Thành viên**: [...]
 - **Ngày**: 2026-05-13
 
 ---
@@ -41,20 +41,20 @@ Ba lớp này bổ sung cho nhau. Nếu một lớp lọt lỗi, lớp khác v�
 
 ### Rủi ro chính được chọn
 
-- **ID tình huống**: T-01
-- **Mô tả ngắn**: Khi phát hiện dấu hiệu cảnh báo đỏ (tức ngực, khó thở, tê tay), AI có xu hướng bị "neo" theo chẩn đoán chủ quan của bệnh nhân (self-diagnosis là "do mệt mỏi/chạy deadline"), gây trì hoãn cấp cứu cho bệnh nhân có nguy cơ nhồi máu cơ tim.
-- **Mức độ**: Nặng
-- **Điểm rủi ro**: 25
-- **Vì sao chọn tình huống này**: Đây là một trong những lỗi gây hậu quả sinh mạng trực tiếp nhất (tử vong do bỏ sót nhồi máu cơ tim). Bẫy thao túng chẩn đoán cũng là bẫy phổ biến nhất mà các AI y tế sơ khai thường mắc phải.
+- **ID tình huống**: T-__
+- **Mô tả ngắn**: Khi [...], AI có xu hướng [...], gây [...] cho [...]
+- **Mức độ**: [Nặng / Vừa]
+- **Điểm rủi ro**: [...]
+- **Vì sao chọn tình huống này**: [...]
 
 ### Tìm nguyên nhân gốc
 
 Đừng chỉ mô tả lỗi. Hãy trả lời: vì sao lỗi xảy ra?
 
 - [ ] Thiếu nguồn dữ liệu đúng.
-- [x] AI đoán khi không biết (bị cuốn theo thông tin của người dùng cung cấp).
+- [ ] AI đoán khi không biết.
 - [ ] Giao diện khiến người dùng tin quá mức.
-- [x] Quy trình thiếu người duyệt hoặc thiếu bước chuyển sang người thật (Hệ thống phụ thuộc 100% vào LLM để phân loại bệnh thay vì có một hệ thống rule-based quét từ khoá đỏ).
+- [ ] Quy trình thiếu người duyệt hoặc thiếu bước chuyển sang người thật.
 - [ ] Không có theo dõi sau khi ra mắt.
 - [ ] Khác: [...]
 
@@ -62,23 +62,60 @@ Ba lớp này bổ sung cho nhau. Nếu một lớp lọt lỗi, lớp khác v�
 
 | Nguyên nhân gốc | Tầng ưu tiên sửa | Lớp giải pháp liên quan |
 |---|---|---|
-| AI bị thao túng tâm lý / hùa theo user | Chỉ dẫn hệ thống / quy tắc từ chối | `2-prompt` là chính |
-| Hệ thống phụ thuộc 100% vào AI sinh tạo | Tách luồng / Chặn bằng Rule-based Classifier | `3-architecture` là chính |
-| User trì hoãn do không nhận thức được mức độ | Giao diện cảnh báo khẩn cấp | `1-uiux` là chính |
+| Thiếu nguồn đúng | Dữ liệu / tra cứu nguồn (RAG) / chính sách nguồn | `3-architecture` là chính |
+| AI đoán bừa | Chỉ dẫn hệ thống / quy tắc từ chối / dẫn nguồn | `2-prompt` là chính |
+| Người dùng tin quá mức | Giao diện cảnh báo / cách viết mức tin cậy | `1-uiux` là chính |
+| Tình huống nhạy cảm | Người duyệt / chuyển sang người thật | `1-uiux` + `2-prompt` + `3-architecture` |
+| Lỗi lặp lại sau khi ra mắt | Theo dõi / vòng phản hồi | `3-architecture` là chính |
 
 Nguyên tắc: lỗi ở tầng nào, ưu tiên sửa ở tầng đó. Đừng chỉ thêm cảnh báo giao diện nếu nguyên nhân gốc là thiếu nguồn dữ liệu hoặc AI đoán khi không biết.
 
+### 10 tầng giải pháp tham khảo
+
+Không bắt buộc dùng đủ 10 tầng. Bảng này giúp nhóm chọn đúng hướng sửa.
+
+| Tầng | Khi nào dùng |
+|---|---|
+| Giao diện | Người dùng tin AI quá mức, thiếu cảnh báo, thiếu nguồn, thiếu nút chuyển sang người thật |
+| Chỉ dẫn AI | AI đoán khi không biết, không hỏi lại, không từ chối |
+| Quy trình xử lý | Cần phân loại ý định, chuyển đúng nơi xử lý, có cách xử lý khi AI không nên trả lời |
+| Dữ liệu / tra cứu nguồn (RAG) | Thiếu nguồn đúng, nguồn cũ, AI không dựa vào nguồn đáng tin cậy |
+| Theo dõi | Lỗi lặp lại sau khi ra mắt nhưng không ai thấy |
+| Chính sách / thông báo giới hạn | Người dùng không biết giới hạn của AI |
+| Người duyệt / phê duyệt | Tình huống pháp lý, y tế, tài chính, tuyển dụng, hoặc tác động lớn |
+| Vai trò trách nhiệm | Có cảnh báo nhưng không ai chịu trách nhiệm xử lý |
+| Vòng phản hồi | Cần người dùng / người rà báo lỗi để cập nhật hệ thống |
+| Kiến trúc lai | LLM một mình không đủ, cần rule, classifier, hoặc nhiều bước kiểm tra |
+
+### 4 hành động phòng vệ
+
+Mỗi lớp nên làm ít nhất một việc:
+
+- **Ngăn**: giảm khả năng lỗi xảy ra từ đầu.
+- **Phát hiện**: nhận ra lỗi hoặc tín hiệu nguy hiểm.
+- **Khắc phục**: chuyển sang người thật, dùng câu trả lời dự phòng, hoặc dừng trả lời.
+- **Thông báo**: giúp người dùng hiểu mức tin cậy và rủi ro.
+
+Gợi ý theo mức rủi ro:
+
+| Mức rủi ro | Nên có |
+|---|---|
+| Nhẹ | Ít nhất 1 hành động |
+| Vừa | Ít nhất 2 hành động |
+| Nặng | Ít nhất 3 hành động |
+| Rất nặng / không đảo ngược được | Cố gắng đủ 4 hành động + có người chịu trách nhiệm |
+
 ### Kết luận Phần A
 
-**Nguyên nhân gốc**: Hệ thống giao toàn quyền phân loại triệu chứng khẩn cấp cho một mô hình LLM chung chung, trong khi LLM dễ bị thiên lệch (bias) bởi các câu tự trấn an của người dùng. Thiếu một luồng xử lý độc lập cho các rủi ro đỏ (Red-flag router).
+**Nguyên nhân gốc**: [...]
 
-**Tầng chính cần sửa**: Chỉ dẫn AI (Prompt) và Kiến trúc dữ liệu (Architecture).
+**Tầng chính cần sửa**: [...]
 
 **Vì sao cần 3 lớp giải pháp**:
 
-- Lớp giao diện: Cần hiển thị cảnh báo đỏ và nút "Gọi cấp cứu ngay" để gián đoạn luồng chat thông thường, buộc người dùng chú ý.
-- Lớp chỉ dẫn AI: Phải có system prompt chỉ thị rõ "Tuyệt đối không đồng tình với chẩn đoán chủ quan của bệnh nhân khi có các keyword: tức ngực, khó thở".
-- Lớp kiến trúc dữ liệu: Cần một Classifier (ví dụ Rule-based hoặc NLP nhỏ) quét tin nhắn trước khi gửi vào LLM. Nếu phát hiện keyword khẩn cấp, kích hoạt kịch bản Triage Đỏ thay vì để LLM tự do đối đáp.
+- Lớp giao diện: [...]
+- Lớp chỉ dẫn AI: [...]
+- Lớp kiến trúc dữ liệu: [...]
 
 ---
 
@@ -88,15 +125,26 @@ Mỗi lớp cần một bản demo. Demo giúp biến ý tưởng thành thứ t
 
 | Lớp | Thư mục | Định dạng demo chọn | Thời gian dự kiến |
 |---|---|---|---|
-| Giao diện | `1-uiux` | Bản nháp ASCII / Mockup text UI | 15 phút |
-| Chỉ dẫn AI | `2-prompt` | Bản prompt trong Markdown + ví dụ test case | 15 phút |
-| Kiến trúc dữ liệu | `3-architecture` | Sơ đồ Mermaid (Flowchart) | 15 phút |
+| Giao diện | `1-uiux` | [vẽ tay / Excalidraw / Figma / HTML / ASCII / Mermaid] | __ phút |
+| Chỉ dẫn AI | `2-prompt` | [bản prompt trong Markdown + ví dụ] | __ phút |
+| Kiến trúc dữ liệu | `3-architecture` | [ASCII / Mermaid / sơ đồ hộp-mũi tên] | __ phút |
 
 **Lý do chọn demo**
 
-- Giao diện: Dùng ASCII/Text UI để vẽ nhanh cảnh báo khẩn cấp (Emergency Banner) chèn lên khung chat.
-- Chỉ dẫn AI: Việc viết thẳng System Prompt giúp chứng minh rõ các ràng buộc an toàn (Safety constraints) ép AI phải tuân thủ.
-- Kiến trúc dữ liệu: Mermaid Flowchart là tốt nhất để biểu diễn luồng đi của dữ liệu từ User -> Keyword Router -> (nếu đỏ) -> Luồng cấp cứu / (nếu bình thường) -> Luồng LLM.
+- Giao diện: [...]
+- Chỉ dẫn AI: [...]
+- Kiến trúc dữ liệu: [...]
+
+Gợi ý: có thể dùng AI để dựng nhanh bản nháp demo, nhưng nhóm phải đọc lại và sửa.
+
+### Chọn demo theo điều cần chứng minh
+
+| Nếu cần chứng minh... | Demo phù hợp |
+|---|---|
+| Người dùng nhìn thấy gì | Sketch, Figma, HTML, ASCII UI |
+| AI được chỉ dẫn thế nào | Bản prompt trong Markdown, ví dụ trả lời |
+| Dữ liệu đi qua đâu | Sơ đồ hộp-mũi tên, ASCII, Mermaid |
+| Quy trình chuyển sang người thật | Sơ đồ quy trình |
 
 ---
 
@@ -106,24 +154,39 @@ Ghi tóm tắt ở đây. Chi tiết nằm trong `card.md` và `demo.*` của t�
 
 ### Lớp 1 — Giao diện (`artifact/1-uiux/`)
 
-- **Cách tiếp cận**: Bổ sung "Emergency Banner" (Cảnh báo đỏ) và nút bấm "Gọi 115" nổi lên ngay lập tức trên màn hình khi AI nhận diện rủi ro, vô hiệu hóa khung nhập liệu chat để tránh user cố tranh luận thêm.
-- **Hành động phòng vệ bao phủ**: Thông báo (cho user biết rủi ro) / Khắc phục (đưa giải pháp gọi 115 ngay).
-- **Demo**: ASCII UI Mockup.
-- **Trạng thái**: Chờ thực hiện.
+- **Cách tiếp cận**: [...]
+- **Hành động phòng vệ bao phủ**: [Thông báo / Phát hiện / Khắc phục]
+- **Demo**: [...]
+- **Trạng thái**: [Chưa làm / Đang làm / Xong]
+
+Link chi tiết:
+
+- `artifact/1-uiux/card.md`
+- `artifact/1-uiux/demo.*`
 
 ### Lớp 2 — Chỉ dẫn AI (`artifact/2-prompt/`)
 
-- **Cách tiếp cận**: Nâng cấp System Prompt với phần "Red-Flag Protocol". Quy định rõ 3 cấm kỵ: (1) Cấm đồng ý với chẩn đoán của bệnh nhân, (2) Cấm gợi ý theo dõi tại nhà nếu có triệu chứng tim mạch, (3) Cấm kéo dài hội thoại.
-- **Hành động phòng vệ bao phủ**: Ngăn (chặn AI hùa theo người dùng) / Từ chối (từ chối cung cấp lịch khám ngày mai).
-- **Demo**: Bản Markdown System Prompt v2 + Test case mẫu.
-- **Trạng thái**: Chờ thực hiện.
+- **Cách tiếp cận**: [...]
+- **Hành động phòng vệ bao phủ**: [Ngăn / Từ chối / Hỏi lại / Dẫn nguồn]
+- **Demo**: [...]
+- **Trạng thái**: [Chưa làm / Đang làm / Xong]
+
+Link chi tiết:
+
+- `artifact/2-prompt/card.md`
+- `artifact/2-prompt/demo.md`
 
 ### Lớp 3 — Kiến trúc dữ liệu (`artifact/3-architecture/`)
 
-- **Cách tiếp cận**: Thêm một `Red-Flag Router` (Bộ phân luồng rủi ro đỏ) ngay trước LLM. Dùng Regex hoặc mô hình NLP nhẹ quét từ khoá "tức ngực, khó thở, tê tay". Nếu khớp, router sẽ gọi một Template trả lời cứng (Hard-coded) thay vì để LLM tự sinh chữ.
-- **Hành động phòng vệ bao phủ**: Phát hiện (quét tin nhắn ngay từ cửa ngõ) / Ngăn (tránh rủi ro Hallucination của LLM).
-- **Demo**: Sơ đồ Mermaid Flowchart.
-- **Trạng thái**: Chờ thực hiện.
+- **Cách tiếp cận**: [...]
+- **Hành động phòng vệ bao phủ**: [Ngăn / Phát hiện / Khắc phục]
+- **Demo**: [...]
+- **Trạng thái**: [Chưa làm / Đang làm / Xong]
+
+Link chi tiết:
+
+- `artifact/3-architecture/card.md`
+- `artifact/3-architecture/demo.md`
 
 ---
 
@@ -131,12 +194,12 @@ Ghi tóm tắt ở đây. Chi tiết nằm trong `card.md` và `demo.*` của t�
 
 | Câu hỏi | Trả lời |
 |---|---|
-| Rủi ro chính đã chọn là gì? | T-01 (Bỏ sót rủi ro tim mạch do hùa theo user) |
-| Nguyên nhân gốc là gì? | LLM bị thao túng bởi self-diagnosis + Thiếu bộ lọc từ khoá cứng độc lập. |
-| 3 lớp giải pháp đã đủ chưa? | Giao diện: 1 / Chỉ dẫn AI: 1 / Kiến trúc: 1 |
-| 4 hành động đã bao phủ chưa? | Ngăn: Có (Prompt, Arch) / Phát hiện: Có (Arch) / Khắc phục: Có (UI) / Thông báo: Có (UI) |
-| Nhóm khác đã góp ý chưa? | Chưa |
-| Nhóm đã sửa gì sau phản biện? | Chưa |
+| Rủi ro chính đã chọn là gì? | T-__ |
+| Nguyên nhân gốc là gì? | [...] |
+| 3 lớp giải pháp đã đủ chưa? | Giao diện: __ / Chỉ dẫn AI: __ / Kiến trúc: __ |
+| 4 hành động đã bao phủ chưa? | Ngăn: __ / Phát hiện: __ / Khắc phục: __ / Thông báo: __ |
+| Nhóm khác đã góp ý chưa? | [...] |
+| Nhóm đã sửa gì sau phản biện? | [...] |
 
 ## Phản biện chéo: 4 câu phải trả lời
 
@@ -155,8 +218,13 @@ Ghi góp ý cụ thể vào `card.md` hoặc phần tổng kiểm tra. Không gh
 
 Nhóm 3 người:
 
-- Đặng Tuấn Anh: `artifact/1-uiux/`
-- Dương Khoa Điềm: `artifact/2-prompt/`
-- Nguyễn Tuấn Khanh: `artifact/3-architecture/`
+- Thành viên A: `artifact/1-uiux/`
+- Thành viên B: `artifact/2-prompt/`
+- Thành viên C: `artifact/3-architecture/`
+
+Nhóm 2 người:
+
+- Một người phụ trách 2 lớp.
+- Người còn lại phụ trách 1 lớp và rà lại 2 lớp kia.
 
 5 phút cuối: cả nhóm đọc chéo 3 lớp, sửa lại bảng tổng kiểm tra, rồi chuẩn bị phản biện chéo.
