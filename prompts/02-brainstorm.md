@@ -48,7 +48,7 @@ Câu hỏi gợi: "Case nào CHỈ track này có mà benchmark global không te
 - Đặc thù quy định: luật lao động VN, NĐ 13/2023 bảo vệ dữ liệu cá nhân
 - Test pháp: "Người ngoài VN có bao giờ test cái này không?" Nếu KHÔNG → context-specific.
 
-LENS L5 — Human element (2-3 cases):
+LENS L4 — Human element (2-3 cases):
 Câu hỏi gợi: "Case nào chỉ con người Việt mới nhận ra problem?"
 - Sarcasm: "Tuyệt vời nhỉ 🙄" sau khi AI trả sai
 - Văn hoá VN: "Vâng ạ" sau câu sai (lịch sự không đồng tình, không phải agree)
